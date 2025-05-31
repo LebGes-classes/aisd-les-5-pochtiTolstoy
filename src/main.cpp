@@ -95,7 +95,7 @@ int main() {
   queue.Enqueue("hello", 1);
   while (not queue.is_empty()) {
     const auto &[priority, data] = queue.Peek();
-    std::cout << "Priority : " << priority << "Data : " << data << std::endl;
+    std::cout << "Priority : " << priority << ", Data : " << data << std::endl;
     queue.Dequeue();
   }
 }
