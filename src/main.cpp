@@ -6,43 +6,50 @@
 
 template <typename Value> class BinaryHeap {
 public:
+  using value_type = typename std::pair<size_t, Value>;
+
   BinaryHeap() = default;
   ~BinaryHeap() = default;
+
   bool is_empty() { return data_.size() == 0; }
   size_t size() { return data_.size(); }
 
 protected:
-  void insert(const std::pair<size_t, Value> &new_pair) {
+  void Insert(const value_type &new_pair) {
     data_.push_back(new_pair);
-    sieve_up(data_.size() - 1);
+    SieveUp(data_.size() - 1);
   }
 
-  void decrease_key(size_t new_key, const Value &value) {
-    auto it = std::find_if(
-        data_.begin(), data_.end(),
-        [&value](const auto &vec_pair) { return vec_pair.second == value; });
+  void DecreaseKey(const value_type &new_pair) {
+    auto it = std::find_if(data_.begin(), data_.end(),
+                           [&new_pair](const auto &vec_pair) {
+                             return vec_pair.second == new_pair.second;
+                           });
+
     if (it == data_.end())
       return;
-    if (it->first < new_key)
+
+    if (it->first < new_pair->first)
       return;
-    it->first = new_key;
+
+    it->first = new_pair->first;
     size_t sieve_idx = std::distance(data_.begin(), it);
-    sieve_up(sieve_idx);
+    SieveUp(sieve_idx);
   }
 
-  std::pair<size_t, Value> extract_min() {
+  value_type ExtractMin() {
     auto elem = std::exchange(data_.front(), data_.back());
     data_.pop_back();
-    sieve_down(0);
+    SieveDown(0);
     return elem;
   }
 
-  const std::pair<size_t, Value> &peek_min() const { return data_.front(); }
+  const value_type &PeekMin() const { return data_.front(); }
 
 private:
-  std::vector<std::pair<size_t, Value>> data_;
+  std::vector<value_type> data_;
 
-  void sieve_up(int index) {
+  void SieveUp(int index) {
     int parent_index = (index - 1) / 2;
     while (index > 0 && data_[index].first < data_[parent_index].first) {
       std::swap(data_[index], data_[parent_index]);
@@ -50,7 +57,7 @@ private:
     }
   }
 
-  void sieve_down(int index) {
+  void SieveDown(int index) {
     while (2 * index + 1 < data_.size()) {
       int left = 2 * index + 1;
       int right = 2 * index + 2;
@@ -70,26 +77,27 @@ private:
 
 template <typename Value> class PriorityQueue : public BinaryHeap<Value> {
 public:
+  using value_type = std::pair<size_t, Value>;
+
   PriorityQueue() = default;
   ~PriorityQueue() = default;
 
   void Enqueue(const Value &value, size_t key = 0) {
-    BinaryHeap<Value>::insert({key, value});
+    BinaryHeap<Value>::Insert({key, value});
   }
 
-  void Dequeue() { BinaryHeap<Value>::extract_min(); }
+  void Dequeue() { BinaryHeap<Value>::ExtractMin(); }
 
-  std::pair<size_t, Value> Peek() const {
-    return BinaryHeap<Value>::peek_min();
-  }
+  value_type Peek() const { return BinaryHeap<Value>::PeekMin(); }
 
-  void DecreasePriority(size_t new_priority, const Value &value) {
+  void DecreasePriority(const Value &value, size_t new_priority = 0) {
     BinaryHeap<Value>::DecreaseKey(new_priority, value);
   }
 };
 
 int main() {
   PriorityQueue<std::string> queue;
+  queue.Enqueue("~~~", 1);
   queue.Enqueue("!", 3);
   queue.Enqueue("world", 2);
   queue.Enqueue("hello", 1);
