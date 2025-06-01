@@ -99,18 +99,18 @@ template <typename Value> auto BinaryHeap<Value>::ExtractMin() -> value_type {
     throw std::out_of_range("Cannot extract from an empty heap");
   }
 
-  value_type elem = std::move(data_.front());
+  value_type elem = data_.front();
   vk_map_.erase(elem.second);
-  if (data_.size() > 1) {
-    data_.front() = std::move(data_.back());
-    vk_map_[data_.front().second] = 0;
+
+  if (data_.size() == 1) {
+    data_.pop_back();
+    return elem;
   }
 
+  data_.front() = std::move(data_.back());
   data_.pop_back();
-  if (!IsEmpty()) {
-    SieveDown(0);
-  }
-
+  vk_map_[data_.front().second] = 0;
+  SieveDown(0);
   return elem;
 }
 

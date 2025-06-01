@@ -255,6 +255,24 @@ TEST_F(PriorityQueueTest, MoveOperations) {
   EXPECT_EQ(v1, 2);
 }
 
+TEST_F(PriorityQueueTest, MoveSemanticsValue) {
+  PriorityQueue<std::string> queue;
+
+  queue.Enqueue(std::string("temporary"), 3);
+
+  EXPECT_EQ(queue.Size(), 1);
+  auto [priority, value] = queue.Peek();
+  EXPECT_EQ(value, "temporary");
+
+  std::string movable = "movable";
+  queue.Enqueue(std::move(movable), 2);
+  EXPECT_TRUE(movable.empty());
+
+  queue.DecreasePriority("temporary", 1);
+  auto [p2, v2] = queue.Peek();
+  EXPECT_EQ(v2, "temporary");
+}
+
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
