@@ -27,6 +27,11 @@ FetchContent_MakeAvailable(googletest)
 add_executable(queue_tests
     tests/queue_tests.cpp
 )
+
+add_executable(queue_benchmark
+  tests/queue_benchmark.cpp
+)
+
 target_link_libraries(queue_tests
     GTest::gtest_main
     pthread
@@ -34,3 +39,4 @@ target_link_libraries(queue_tests
 
 enable_testing()
 add_test(NAME queue_tests COMMAND queue_tests)
+add_test(NAME queue_benchmark COMMAND queue_benchmark)
