@@ -50,10 +50,23 @@ BenchmarkResult run_benchmark(size_t n) {
     size_t idx = index_dist(rng);
     size_t new_priority = priorities[idx] / 2;
 
+    // t1 = high_resolution_clock::now();
+    // pq.DecreasePriority(values[idx], new_priority);
+    // t2 = high_resolution_clock::now();
+    // decrease_times.push_back(duration_cast<microseconds>(t2 - t1).count());
+
+    const size_t decrease_ops = 1000;
+
     t1 = high_resolution_clock::now();
-    pq.DecreasePriority(values[idx], new_priority);
+    for (size_t i = 0; i < decrease_ops; i++) {
+      size_t idx = index_dist(rng);
+      size_t new_priority = priorities[idx] / (2 + i % 10);
+      pq.DecreasePriority(values[idx], new_priority);
+      asm volatile("" ::: "memory");
+    }
     t2 = high_resolution_clock::now();
-    decrease_times.push_back(duration_cast<microseconds>(t2 - t1).count());
+    decrease_times.push_back(duration_cast<nanoseconds>(t2 - t1).count() /
+                             static_cast<double>(decrease_ops));
 
     t1 = high_resolution_clock::now();
     while (!pq.IsEmpty()) {
