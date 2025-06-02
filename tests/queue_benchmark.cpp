@@ -92,7 +92,7 @@ int main() {
   std::vector<size_t> sizes = {1000, 2000, 4000, 8000, 16000, 32000, 64000};
   std::ofstream out("benchmark_results.csv");
 
-  out << "Size,Insert(us),Extract(us),Peek(us),Decrease(us)\n";
+  out << "Size,Insert(us),Extract(us),Peek(us),Decrease(ns)\n";
 
   for (size_t n : sizes) {
     std::cout << "Benchmarking n = " << n << "..." << std::endl;
